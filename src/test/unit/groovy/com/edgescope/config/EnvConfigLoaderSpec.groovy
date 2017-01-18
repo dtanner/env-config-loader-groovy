@@ -32,9 +32,9 @@ class EnvConfigLoaderSpec extends Specification {
         appConfig.getProperty(propertyName) == expectedValue
 
         where:
-        propertyName | environmentMap | expectedValue
-        'stringValue' | [TEST_STRING_VALUE: "b"] | 'b'
-        'intValue' | [TEST_INT_VALUE: "2"] | 2
+        propertyName      | environmentMap                  | expectedValue
+        'stringValue'     | [TEST_STRING_VALUE: "b"]        | 'b'
+        'intValue'        | [TEST_INT_VALUE: "2"]           | 2
         'bigDecimalValue' | [TEST_BIG_DECIMAL_VALUE: "2.0"] | 2.0
     }
 
@@ -50,5 +50,16 @@ class EnvConfigLoaderSpec extends Specification {
         1 * EnvConfigLoader.getenv() >> [TEST_UNKNOWN_VALUE: "a"]
         appConfig.untouchedValue == "untouched"
         noExceptionThrown()
+    }
+
+    @Unroll
+    def "toLowerCamelCase for #input should output #output"() {
+        expect:
+        EnvConfigLoader.toLowerCamelCase(input) == output
+
+        where:
+        input     | output
+        'FOO'     | 'foo'
+        'FOO_BAR' | 'fooBar'
     }
 }

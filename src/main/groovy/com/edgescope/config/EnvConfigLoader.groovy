@@ -1,6 +1,5 @@
 package com.edgescope.config
 
-import com.google.common.base.CaseFormat
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,7 +19,7 @@ class EnvConfigLoader {
 
         Map<String, String> envOverridesMap = getenv().findAll { it.key.startsWith(environmentPrefix) }
         Map<String, String> camelOverridesMap = envOverridesMap.collectEntries { Map.Entry<String, String> entry ->
-            String camelPropertyName = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, entry.key.drop(environmentPrefix.length() + 1).toString())
+            String camelPropertyName = toLowerCamelCase(entry.key.drop(environmentPrefix.length() + 1).toString())
             return [(camelPropertyName): entry.value]
         } as Map<String, String>
 
@@ -47,5 +46,29 @@ class EnvConfigLoader {
     // thin wrapper for easier testing
     protected static Map<String, String> getenv() {
         System.getenv()
+    }
+
+    /**
+     * Given e.g. FOO or FOO_BAR, results in foo or fooBar
+     * @param upperUnderscoreString
+     * @return the string in lowerCamelCase
+     */
+    protected static String toLowerCamelCase(String upperUnderscoreString) {
+        String lowerInput = upperUnderscoreString.toLowerCase()
+
+        StringBuilder stringBuilder = new StringBuilder(lowerInput.size())
+        char underscore = '_'
+        for (int index = 0; index < lowerInput.length(); index++) {
+            char c = lowerInput.charAt(index)
+            if (c == underscore && index > 0) {
+                index++
+                stringBuilder << lowerInput.charAt(index).toUpperCase()
+            } else {
+                stringBuilder << c
+            }
+
+        }
+
+        return stringBuilder.toString()
     }
 }
