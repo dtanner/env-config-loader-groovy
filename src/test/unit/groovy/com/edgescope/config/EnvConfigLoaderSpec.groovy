@@ -1,29 +1,54 @@
 package com.edgescope.config
 
 import spock.lang.Specification
-import spock.util.mop.ConfineMetaClassChanges
+import spock.lang.Unroll
 
 class EnvConfigLoaderSpec extends Specification {
 
-    @ConfineMetaClassChanges(EnvConfigLoader)
-    def "Load"() {
-        when: "a default appConfig is loaded"
-
+    def "non-overridden values remain"() {
+        given:
         TestAppConfig appConfig = new TestAppConfig()
+        GroovySpy(EnvConfigLoader, global: true)
 
-        then: "it contains some defaults specified in the class"
-        appConfig.stringValue == 'test'
-
-        when: "we override with an known environment variable"
-        EnvConfigLoader.metaClass.static.getenv = { [TEST_STRING_VALUE: "b", TEST_INT_VALUE: "2", TEST_BIG_DECIMAL_VALUE: "2.0"] }
+        when:
         appConfig = EnvConfigLoader.overrideFromEnvironment(appConfig, 'TEST')
 
-        then: "non-overridden values are left alone"
+        then:
+        1 * EnvConfigLoader.getenv() >> [TEST_STRING_VALUE: "b"]
         appConfig.untouchedValue == "untouched"
+    }
 
-        and: "other values are properly overridden"
-        appConfig.stringValue == 'b'
-        appConfig.intValue == 2
-        appConfig.bigDecimalValue == 2.0
+    @Unroll
+    def "#propertyName type override"() {
+        given:
+        TestAppConfig appConfig = new TestAppConfig()
+        GroovySpy(EnvConfigLoader, global: true)
+
+        when:
+        appConfig = EnvConfigLoader.overrideFromEnvironment(appConfig, 'TEST')
+
+        then:
+        1 * EnvConfigLoader.getenv() >> environmentMap
+        appConfig.getProperty(propertyName) == expectedValue
+
+        where:
+        propertyName | environmentMap | expectedValue
+        'stringValue' | [TEST_STRING_VALUE: "b"] | 'b'
+        'intValue' | [TEST_INT_VALUE: "2"] | 2
+        'bigDecimalValue' | [TEST_BIG_DECIMAL_VALUE: "2.0"] | 2.0
+    }
+
+    def "extra environment values don't cause an error (e.g. when phasing out properties from the code)"() {
+        given:
+        TestAppConfig appConfig = new TestAppConfig()
+        GroovySpy(EnvConfigLoader, global: true)
+
+        when:
+        appConfig = EnvConfigLoader.overrideFromEnvironment(appConfig, 'TEST')
+
+        then:
+        1 * EnvConfigLoader.getenv() >> [TEST_UNKNOWN_VALUE: "a"]
+        appConfig.untouchedValue == "untouched"
+        noExceptionThrown()
     }
 }
