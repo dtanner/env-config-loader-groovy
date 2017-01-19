@@ -71,6 +71,7 @@ bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
     publications = ['mavenCustom']
+    publish = true
     pkg {
         repo = project.project_bintray_repo
         // userOrg = project.project_bintray_org
@@ -81,6 +82,6 @@ bintray {
         websiteUrl = project.project_url
         issueTrackerUrl = project.project_issues
         vcsUrl = project.project_scm
-        publicDownloadNumbers = false
+        publicDownloadNumbers = true
     }
 }
