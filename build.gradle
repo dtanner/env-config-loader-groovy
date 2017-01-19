@@ -2,6 +2,13 @@ buildscript {
     repositories {
         jcenter()
     }
+
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'org.ajoberstar:gradle-git:1.3.2'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+        classpath 'net.nemerosa:versioning:2.1.0'
+    }
 }
 
 plugins {
@@ -12,11 +19,10 @@ repositories {
     jcenter()
 }
 
-group = 'org.jfrog.example.gradle'
-version = '0.1.0'
-
 apply plugin: 'groovy'
 apply plugin: 'idea'
+apply plugin: 'com.github.ben-manes.versions'
+apply from: 'gradle/publishing.gradle'
 
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.4.7"
@@ -25,21 +31,36 @@ dependencies {
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
 
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    configurations = ['archives']
-    pkg {
-        repo = 'generic'
-        name = 'env-config-loader-groovy'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/dtanner/env-config-loader-groovy.git'
-
-        version {
-            name = '0.1.0'
-            desc = "Utility library to override an object's properties with environment variable values."
-            released = new Date()
-            vcsTag = '0.1.0'
-        }
+sourceSets {
+    main {
+        resources.srcDir 'src/main/resources'
     }
 }
+
+task sourcesJar(type: Jar) {
+    group 'Build'
+    description 'An archive of the source code'
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+        showStandardStreams = true
+    }
+}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+
+jar.finalizedBy sourcesJar
+
+artifacts {
+    sourcesJar
+}
+
