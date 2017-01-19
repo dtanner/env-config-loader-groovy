@@ -66,4 +66,4 @@ artifacts {
     sourcesJar
 }
 
-tasks.release.dependsOn 'build'
+tasks.release.dependsOn 'build', 'bintrayUpload'
