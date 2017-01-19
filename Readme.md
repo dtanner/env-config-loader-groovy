@@ -46,27 +46,13 @@ That would be nice in some ways, but environment variables don't seem to match a
 - It currently supports Strings, Integers, and BigDecimal types.  Other types might work, but aren't tested.  (Totally open to suggestion on more types; just haven't seen a need.)  
 
 ## Dependencies
-Guava, for its utility function to convert UPPER_UNDERSCORE to lowerCamel case names.
+groovy-all, logback-classic, and spock for testing.
 
 ## FAQs
 
 ##### Why not just use a ConfigObject for configuration?
 - How do you know where a config property is being used?  Or not used at all?  Or if it's set to the wrong type? And *when* do you tend to discover these problems?
 
-##### Why not use https://github.com/typesafehub/config?
-It's a superset of this functionality, and is a fine choice for many configuration tasks.  The reason I created this was because:
-- I like using code as configuration, with all of the tooling support that you get with code.  
-- There's less safety in my opinion with json and other non-compiled configuration.
-- It's very fully-featured, but is more complex than I wanted/needed.
-- Its environment override feature is per-property, not global.  
-i.e. For each property you want to override, you need to add a line of code.
-That's more flexible, but unnecessary for most apps presuming you can control your env variable names, and makes the configuration noisier IMO. 
-
 ## Issues / Questions
 Please open an issue and let me know if you think something's missing, confusing, or broken.   
 
-
-##### Road Map
-- feature for @RequiresOverride...or maybe the converse of @GlobalConfig. ideally let RequiresOverride be defined at the class or property level.  
-This would prevent situations where forget or make a mistake when you add an environment override.  
-- don't break if a prefix exists that doesn't match a property...maybe log it
