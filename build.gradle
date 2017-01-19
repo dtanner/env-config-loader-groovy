@@ -4,9 +4,16 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 repositories {
     jcenter()
 }
+
+group = 'org.jfrog.example.gradle'
+version = '0.1.0'
 
 apply plugin: 'groovy'
 apply plugin: 'idea'
@@ -18,3 +25,21 @@ dependencies {
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
 
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'generic'
+        name = 'env-config-loader-groovy'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/dtanner/env-config-loader-groovy.git'
+
+        version {
+            name = '0.1.0'
+            desc = "Utility library to override an object's properties with environment variable values."
+            released = new Date()
+            vcsTag = '0.1.0'
+        }
+    }
+}
