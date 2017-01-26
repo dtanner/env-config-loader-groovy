@@ -4,6 +4,8 @@ Utility library to override an object's properties with environment variable val
 
 [![Build Status](https://travis-ci.org/dtanner/env-config-loader-groovy.svg?branch=master)](https://travis-ci.org/dtanner/env-config-loader-groovy)
 
+Available from the jcenter repository as: compile 'com.edgescope:env-config-loader-groovy:1.0.0'
+
 ## Main Purpose
 Let you define your application's configuration in a **typed** configuration, 
 and allow its settings to be overridden by environment variables.
