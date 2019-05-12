@@ -1,3 +1,6 @@
+# Deprecated
+I originally created this library, but wanted the same capability for other JDK languages, so created https://github.com/dtanner/env-override.  That library now has more features and is what I'll continue to maintain and improve.
+
 # env-config-loader-groovy
 
 Utility library to override an object's properties with environment variable values.  
